@@ -1,6 +1,8 @@
 package gui;
 
 import java.net.URL;
+import java.sql.Date;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.ArrayList;
@@ -132,10 +134,30 @@ public class SellerFormController implements Initializable {
 		obj.setId(Utils.tryParseToInt(txtId.getText()));
 
 		if (txtName.getText() == null || txtName.getText().trim() == ("")) {
-			exception.addErrors("name", "field name can´t be empty");
+			exception.addErrors("name", "field can´t be empty");
 		}
 		obj.setName(txtName.getText());
 
+		if (txtEmail.getText() == null || txtEmail.getText().trim() == ("")) {
+			exception.addErrors("email", "field can´t be empty");
+		}
+		obj.setEmail(txtEmail.getText());
+		
+		if(dpBirthDate.getValue() == null) {
+			exception.addErrors("birthDate", "field  can´t be empty");
+		}
+		else {
+		Instant instant = Instant.from(dpBirthDate.getValue().atStartOfDay(ZoneId.systemDefault()));
+		obj.setBirthDate(Date.from(instant));
+		}
+		
+		if (txtBaseSalary.getText() == null || txtBaseSalary.getText().trim() == ("")) {
+			exception.addErrors("baseSalary", "field can´t be empty");
+		}
+		obj.setBaseSalary(Utils.tryParseToDouble(txtBaseSalary.getText()));
+		
+		obj.setDepartment(comboBoxDepartment.getValue());
+		
 		if (exception.getErrors().size() > 0) {
 			throw exception;
 		}
@@ -195,11 +217,12 @@ public class SellerFormController implements Initializable {
 	private void setErrorMessages(Map<String, String> errors) {
 		Set<String> fields = errors.keySet();
 
-		if (fields.contains("name")) {
-			lblErrorName.setText(errors.get("name"));
+		lblErrorName.setText((fields.contains("name") ? errors.get("name") : ""));
+		lblErrorEmail.setText((fields.contains("email") ? errors.get("email") : ""));
+		lblErrorBirthDate.setText((fields.contains("birthDate") ? errors.get("birthDate") : ""));
+		lblErrorBaseSalary.setText((fields.contains("baseSalary") ? errors.get("baseSalary") : ""));
 		}
-	}
-
+	
 	private void initializeComboBoxDepartment() {
 		Callback<ListView<Department>, ListCell<Department>> factory = lv -> new ListCell<Department>() {
 			@Override
